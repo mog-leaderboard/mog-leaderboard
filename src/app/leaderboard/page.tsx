@@ -13,33 +13,10 @@ import { cn } from "@/lib/utils";
 import { getLeaderboard } from "@/lib/firestore-helpers";
 
 function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) {
-    return (
-      <div className="relative flex items-center justify-center w-8 h-8">
-        <div className="absolute inset-0 bg-yellow-500/20 rounded-full blur-sm" />
-        <Crown className="h-5 w-5 text-yellow-500 relative z-10" />
-      </div>
-    );
-  }
-  if (rank === 2) {
-    return (
-      <div className="flex items-center justify-center w-8 h-8">
-        <Medal className="h-5 w-5 text-gray-400" />
-      </div>
-    );
-  }
-  if (rank === 3) {
-    return (
-      <div className="flex items-center justify-center w-8 h-8">
-        <Medal className="h-5 w-5 text-amber-600" />
-      </div>
-    );
-  }
-  return (
-    <div className="flex items-center justify-center w-8 h-8">
-      <span className="text-sm font-medium text-muted-foreground tabular-nums">{rank}</span>
-    </div>
-  );
+  if (rank === 1) return <Crown className="h-4 w-4 text-yellow-500" />;
+  if (rank === 2) return <Medal className="h-4 w-4 text-gray-400" />;
+  if (rank === 3) return <Medal className="h-4 w-4 text-amber-600" />;
+  return <span className="text-xs font-medium text-muted-foreground tabular-nums">{rank}</span>;
 }
 
 function RankChange({ currentRank, previousRank }: { currentRank: number; previousRank?: number }) {
@@ -140,66 +117,41 @@ export default function LeaderboardPage() {
           <p className="text-sm mt-1">Be the first to ascend!</p>
         </div>
       ) : (
-        <div className="space-y-2 animate-fade-in">
+        <div className="rounded-xl border border-border/50 overflow-hidden divide-y divide-border/40 animate-fade-in">
           {entries.map((entry, i) => {
             const rank = i + 1;
             const tier = getPslTier(entry.avgOverallRating);
             const isTop3 = rank <= 3;
             return (
-              <Card
+              <div
                 key={entry.uid}
                 className={cn(
-                  "flex items-center gap-3 p-3.5 card-hover border-border/50",
-                  isTop3 && "border-brand/20 bg-brand/[0.03]",
-                  rank === 1 && "glow-brand-sm"
+                  "flex items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted/30",
+                  isTop3 && "bg-brand/[0.03]"
                 )}
               >
-                {/* Rank */}
-                <RankBadge rank={rank} />
-
-                {/* Avatar */}
-                <div className={cn(
-                  "relative",
-                  isTop3 && "ring-2 ring-brand/30 rounded-full"
-                )}>
-                  <Avatar className="h-11 w-11">
-                    <AvatarImage src={entry.photo} />
-                    <AvatarFallback className="bg-muted text-sm font-medium">
-                      {entry.displayName[0]}
-                    </AvatarFallback>
-                  </Avatar>
+                <div className="w-6 shrink-0">
+                  <RankBadge rank={rank} />
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm truncate">{entry.displayName}</span>
-                    <span className={cn("text-[10px] font-semibold uppercase tracking-wide", tier.color)}>
-                      {tier.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">
-                      {entry.totalRatingsReceived} ratings
-                    </span>
-                    <RankChange currentRank={rank} previousRank={entry.previousRank} />
-                  </div>
+                <Avatar className={cn("h-8 w-8 shrink-0", isTop3 && "ring-1 ring-brand/30")}>
+                  <AvatarImage src={entry.photo} />
+                  <AvatarFallback className="bg-muted text-xs">{entry.displayName[0]}</AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                  <span className="font-medium text-sm truncate">{entry.displayName}</span>
+                  <span className={cn("text-[9px] font-semibold uppercase tracking-wide shrink-0", tier.color)}>
+                    {tier.label}
+                  </span>
+                  <RankChange currentRank={rank} previousRank={entry.previousRank} />
                 </div>
 
-                {/* Scores */}
-                <div className="flex items-center gap-4 text-right">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Face</div>
-                    <div className="font-semibold text-sm tabular-nums">{entry.avgFaceRating.toFixed(1)}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Overall</div>
-                    <div className="font-bold text-lg text-brand tabular-nums">
-                      {entry.avgOverallRating.toFixed(1)}
-                    </div>
-                  </div>
+                <div className="flex items-baseline gap-3 shrink-0 tabular-nums text-right">
+                  <span className="text-xs text-muted-foreground">{entry.avgFaceRating.toFixed(1)}</span>
+                  <span className="font-bold text-sm text-brand">{entry.avgOverallRating.toFixed(1)}</span>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
