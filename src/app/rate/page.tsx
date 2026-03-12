@@ -45,9 +45,11 @@ export default function RatePage() {
       router.push("/login");
       return;
     }
-    // Allow rating even without a complete profile (for demo).
-    // Once profile is loaded (or confirmed null), fetch next user.
-    if (!loading && user) {
+    if (!loading && user && !profile?.profileComplete) {
+      router.push("/profile");
+      return;
+    }
+    if (!loading && user && profile?.profileComplete) {
       fetchNextUser();
     }
   }, [user, loading, router, fetchNextUser]);
