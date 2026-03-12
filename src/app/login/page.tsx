@@ -26,24 +26,29 @@ export default function LoginPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <Flame className="h-8 w-8 animate-pulse text-orange-500" />
+        <Flame className="h-8 w-8 animate-pulse text-brand" />
       </div>
     );
   }
 
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2">
+      <Card className="w-full max-w-md glass border-border/50 animate-slide-up">
+        <CardHeader className="text-center space-y-3 pb-2">
           <div className="flex justify-center">
-            <Flame className="h-10 w-10 text-orange-500" />
+            <div className="relative">
+              <div className="rounded-2xl bg-brand/10 p-4 border border-brand/20">
+                <Flame className="h-10 w-10 text-brand" />
+              </div>
+              <div className="absolute inset-0 blur-2xl bg-brand/20 -z-10 rounded-full" />
+            </div>
           </div>
-          <CardTitle className="text-2xl">{greeting}</CardTitle>
+          <CardTitle className="text-2xl font-heading">{greeting}</CardTitle>
           <CardDescription>Sign in to continue mogging and getting PSL rated</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <Button
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-medium transition-all duration-200 hover:scale-[1.01] glow-brand-sm"
             size="lg"
             onClick={signInWithGoogle}
           >

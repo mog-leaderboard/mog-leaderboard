@@ -58,45 +58,52 @@ export default function PointsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <Flame className="h-8 w-8 animate-pulse text-orange-500" />
+        <Flame className="h-8 w-8 animate-pulse text-brand" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Coins className="h-6 w-6 text-yellow-500" />
+        <h1 className="text-2xl font-bold flex items-center gap-2.5 font-heading">
+          <div className="relative">
+            <Coins className="h-6 w-6 text-yellow-500" />
+            <div className="absolute inset-0 blur-md bg-yellow-500/30 -z-10" />
+          </div>
           Your Points
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mt-1">
           Earn {POINTS_PER_RATING} points for each rating you give
         </p>
       </div>
 
       {/* Points balance */}
-      <Card className="bg-gradient-to-br from-orange-500 to-yellow-500 text-white">
-        <CardContent className="p-8 text-center">
-          <div className="text-sm opacity-90 mb-2">Total Points</div>
-          <div className="text-5xl font-bold">{profile?.points || 0}</div>
-          <div className="text-sm opacity-75 mt-2">
-            {Math.floor((profile?.points || 0) / POINTS_PER_RATING)} ratings given
-          </div>
-        </CardContent>
+      <Card className="overflow-hidden border-0">
+        <div className="bg-gradient-to-br from-brand via-orange-500 to-yellow-500 p-[1px] rounded-xl">
+          <CardContent className="p-8 text-center bg-background/95 rounded-[11px]">
+            <div className="text-sm text-muted-foreground mb-2">Total Points</div>
+            <div className="text-5xl font-extrabold font-heading text-gradient">
+              {profile?.points || 0}
+            </div>
+            <div className="text-sm text-muted-foreground mt-2">
+              {Math.floor((profile?.points || 0) / POINTS_PER_RATING)} ratings given
+            </div>
+          </CardContent>
+        </div>
       </Card>
 
       {/* How to earn */}
-      <Card>
+      <Card className="border-border/50 card-hover">
         <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Star className="h-4 w-4" />
+          <CardTitle className="text-sm flex items-center gap-2 font-heading">
+            <Star className="h-4 w-4 text-yellow-500" />
             How to Earn Points
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="text-orange-500">
+            <Badge variant="secondary" className="text-brand font-semibold">
               +{POINTS_PER_RATING}
             </Badge>
             <span className="text-sm">Rate another user (face + overall)</span>
@@ -105,9 +112,9 @@ export default function PointsPage() {
       </Card>
 
       {/* Wallet */}
-      <Card>
+      <Card className="border-border/50 card-hover">
         <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+          <CardTitle className="text-sm flex items-center gap-2 font-heading">
             <Wallet className="h-4 w-4" />
             Solana Wallet (Optional)
           </CardTitle>
@@ -118,13 +125,14 @@ export default function PointsPage() {
               value={solanaWallet}
               onChange={(e) => setSolanaWallet(e.target.value)}
               placeholder="Your Solana wallet address"
-              className="font-mono text-sm"
+              className="font-mono text-sm bg-muted/30 border-border/50"
             />
             <Button
               size="sm"
               variant="outline"
               disabled={savingWallet || solanaWallet === (profile?.solanaWallet || "")}
               onClick={handleSaveWallet}
+              className="border-border/50"
             >
               {savingWallet ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -140,11 +148,13 @@ export default function PointsPage() {
       </Card>
 
       {/* Coming soon */}
-      <Card className="border-dashed">
+      <Card className="border-dashed border-border/40">
         <CardContent className="p-8 text-center">
-          <Gift className="h-10 w-10 mx-auto text-muted-foreground mb-4" />
-          <h3 className="font-semibold">Token Claim Coming Soon</h3>
-          <p className="text-sm text-muted-foreground mt-2">
+          <div className="rounded-2xl bg-muted/30 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <Gift className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="font-semibold font-heading">Token Claim Coming Soon</h3>
+          <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
             Your points will be convertible to tokens on Solana. Keep rating to earn more!
           </p>
         </CardContent>
@@ -152,9 +162,9 @@ export default function PointsPage() {
 
       {/* Recent activity */}
       {recentRatings.length > 0 && (
-        <Card>
+        <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="text-sm">Recent Activity</CardTitle>
+            <CardTitle className="text-sm font-heading">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -164,10 +174,10 @@ export default function PointsPage() {
                     Rated a user
                   </span>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-green-600">
+                    <Badge variant="secondary" className="text-emerald-500 font-semibold">
                       +{POINTS_PER_RATING}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground tabular-nums">
                       {new Date(r.createdAt).toLocaleDateString()}
                     </span>
                   </div>

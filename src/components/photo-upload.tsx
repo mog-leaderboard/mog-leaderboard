@@ -49,9 +49,9 @@ export function PhotoUpload({ uid, index, currentUrl, onUpload }: PhotoUploadPro
   return (
     <div
       className={cn(
-        "relative aspect-[3/4] rounded-xl border-2 border-dashed cursor-pointer overflow-hidden transition-colors",
-        "hover:border-orange-500/50 hover:bg-orange-500/5",
-        preview ? "border-transparent" : "border-muted-foreground/25"
+        "relative aspect-[3/4] rounded-xl border-2 border-dashed cursor-pointer overflow-hidden transition-all duration-200",
+        "hover:border-brand/50 hover:bg-brand/5",
+        preview ? "border-transparent" : "border-border/40"
       )}
       onClick={() => inputRef.current?.click()}
     >
@@ -67,25 +67,27 @@ export function PhotoUpload({ uid, index, currentUrl, onUpload }: PhotoUploadPro
           <Image src={preview} alt={`Photo ${index + 1}`} fill className="object-cover" />
           {!uploading && (
             <button
-              className="absolute top-2 right-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+              className="absolute top-2 right-2 rounded-full bg-black/60 backdrop-blur-sm p-1.5 text-white hover:bg-black/80 transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 setPreview(null);
                 onUpload("");
               }}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </>
       ) : (
         <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
-          <Camera className="h-8 w-8" />
-          <span className="text-sm">Photo {index + 1}</span>
+          <div className="rounded-xl bg-muted/30 p-3">
+            <Camera className="h-6 w-6" />
+          </div>
+          <span className="text-xs font-medium">Photo {index + 1}</span>
         </div>
       )}
       {uploading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <Loader2 className="h-8 w-8 text-white animate-spin" />
         </div>
       )}

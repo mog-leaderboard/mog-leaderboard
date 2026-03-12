@@ -60,6 +60,7 @@ export interface LeaderboardEntry {
   avgFaceRating: number;
   totalRatingsReceived: number;
   gender: Gender;
+  previousRank?: number;
 }
 
 export interface PointsHistoryEntry {

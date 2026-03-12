@@ -57,7 +57,7 @@ export default function RatePage() {
   if (loading || (!profile && user)) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <Flame className="h-8 w-8 animate-pulse text-orange-500" />
+        <Flame className="h-8 w-8 animate-pulse text-brand" />
       </div>
     );
   }
@@ -76,21 +76,23 @@ export default function RatePage() {
   if (fetchingNext) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-        <p className="text-muted-foreground">Scanning for the next face to PSL rate...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        <p className="text-muted-foreground text-sm">Scanning for the next face to PSL rate...</p>
       </div>
     );
   }
 
   if (noMoreUsers || !currentUser) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4 px-4">
-        <UserX className="h-12 w-12 text-muted-foreground" />
-        <h2 className="text-xl font-semibold">You&apos;ve Mogged Everyone</h2>
-        <p className="text-muted-foreground text-center">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4 px-4 animate-fade-in">
+        <div className="rounded-2xl bg-muted/50 p-6">
+          <UserX className="h-12 w-12 text-muted-foreground" />
+        </div>
+        <h2 className="text-xl font-semibold font-heading">You&apos;ve Mogged Everyone</h2>
+        <p className="text-muted-foreground text-center text-sm max-w-sm">
           No more faces to judge. Touch grass and check back later for fresh moggers.
         </p>
-        <Button variant="outline" onClick={fetchNextUser}>
+        <Button variant="outline" onClick={fetchNextUser} className="border-border/50 hover:bg-muted/50">
           Try Again
         </Button>
       </div>

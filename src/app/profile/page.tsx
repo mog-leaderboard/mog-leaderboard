@@ -62,7 +62,7 @@ export default function ProfilePage() {
   if (loading || !user) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <Flame className="h-8 w-8 animate-pulse text-orange-500" />
+        <Flame className="h-8 w-8 animate-pulse text-brand" />
       </div>
     );
   }
@@ -122,21 +122,21 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold font-heading">
           {profile?.profileComplete ? "Edit Profile" : "Complete Your Profile"}
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-sm mt-1">
           {profile?.profileComplete
             ? "Update your photos and information"
             : "Upload two photos and fill in your details to start getting rated"}
         </p>
       </div>
 
-      <Card>
+      <Card className="border-border/50">
         <CardHeader>
-          <CardTitle>Your Photos</CardTitle>
+          <CardTitle className="font-heading">Your Photos</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
@@ -156,9 +156,9 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-border/50">
         <CardHeader>
-          <CardTitle>About You</CardTitle>
+          <CardTitle className="font-heading">About You</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -168,6 +168,7 @@ export default function ProfilePage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
+              className="bg-muted/30 border-border/50"
             />
           </div>
 
@@ -175,7 +176,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Gender</Label>
               <Select value={gender} onValueChange={(v) => setGender(v as Gender)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/30 border-border/50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,6 +199,7 @@ export default function ProfilePage() {
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 placeholder="18-100"
+                className="bg-muted/30 border-border/50"
               />
             </div>
           </div>
@@ -206,7 +208,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Hair Color</Label>
               <Select value={hairColor} onValueChange={(v) => setHairColor(v as HairColor)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/30 border-border/50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -222,7 +224,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Race / Ethnicity</Label>
               <Select value={race} onValueChange={(v) => setRace(v as Race)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/30 border-border/50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -239,29 +241,29 @@ export default function ProfilePage() {
       </Card>
 
       {profile?.profileComplete && (
-        <Card>
+        <Card className="border-border/50">
           <CardHeader>
-            <CardTitle>Your Ratings</CardTitle>
+            <CardTitle className="font-heading">Your Ratings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold text-brand tabular-nums">
                   {profile.avgFaceRating?.toFixed(1) || "—"}
                 </div>
-                <div className="text-sm text-muted-foreground">Face</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium mt-1">Face</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold text-brand tabular-nums">
                   {profile.avgOverallRating?.toFixed(1) || "—"}
                 </div>
-                <div className="text-sm text-muted-foreground">Overall</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium mt-1">Overall</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold tabular-nums">
                   {profile.totalRatingsReceived || 0}
                 </div>
-                <div className="text-sm text-muted-foreground">Ratings</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium mt-1">Ratings</div>
               </div>
             </div>
           </CardContent>
@@ -269,7 +271,7 @@ export default function ProfilePage() {
       )}
 
       <Button
-        className="w-full bg-orange-500 hover:bg-orange-600"
+        className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-semibold transition-all duration-200 hover:scale-[1.005] glow-brand-sm"
         size="lg"
         disabled={!isValid || saving}
         onClick={handleSave}

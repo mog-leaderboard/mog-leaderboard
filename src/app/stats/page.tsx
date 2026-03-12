@@ -3,13 +3,14 @@
 import { useAuth } from "@/lib/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, BarChart3, TrendingUp } from "lucide-react";
+import { Flame, BarChart3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import type { RatingStats, DemographicStat } from "@/lib/types";
 import { getUserStats } from "@/lib/firestore-helpers";
 
-// Generate fake demo stats for users with no real ratings
+// [SYNTHETIC DATA] Generate fake demo stats for users with no real ratings.
+// Remove this function (and the isDemo logic below) once we have enough real users.
 function generateDemoStats() {
   const rand = (lo: number, hi: number) => Math.round((lo + Math.random() * (hi - lo)) * 10) / 10;
   const makeBucket = (count: number) => ({
@@ -76,9 +77,9 @@ function DemographicChart({
 
   if (chartData.length === 0) {
     return (
-      <Card>
+      <Card className="border-border/50">
         <CardHeader>
-          <CardTitle className="text-sm">{title}</CardTitle>
+          <CardTitle className="text-sm font-heading">{title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">No data yet</p>
@@ -88,23 +89,29 @@ function DemographicChart({
   }
 
   return (
-    <Card>
+    <Card className="border-border/50 card-hover">
       <CardHeader>
-        <CardTitle className="text-sm">{title}</CardTitle>
+        <CardTitle className="text-sm font-heading">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={chartData} layout="vertical" margin={{ left: 70 }}>
-            <XAxis type="number" domain={[0, 10]} />
-            <YAxis type="category" dataKey="name" width={65} tick={{ fontSize: 12 }} />
+            <XAxis type="number" domain={[0, 10]} stroke="var(--muted-foreground)" fontSize={11} />
+            <YAxis type="category" dataKey="name" width={65} tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" />
             <Tooltip
               formatter={(value) => [Number(value).toFixed(1), "Avg Rating"]}
               labelFormatter={(label) => {
                 const item = chartData.find((d) => d.name === label);
                 return `${label} (${item?.count || 0} ratings)`;
               }}
+              contentStyle={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+                borderRadius: "0.5rem",
+                fontSize: "12px",
+              }}
             />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+            <Bar dataKey="value" radius={[0, 6, 6, 0]}>
               {chartData.map((_, i) => (
                 <Cell key={i} fill={COLORS[i % COLORS.length]} />
               ))}
@@ -124,67 +131,69 @@ export default function StatsPage() {
     if (!loading && !user) router.push("/login");
   }, [user, loading, router]);
 
-  const { data: realData, isLoading } = useQuery<{
-    stats: RatingStats;
-    avgFaceRating: number;
-    avgOverallRating: number;
-    totalRatingsReceived: number;
-  }>({
+  const { data: realData, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: () => getUserStats(user!.uid),
     enabled: !!user,
   });
 
-  // Use demo data if no real ratings exist
+  // [SYNTHETIC DATA] Use demo data if no real ratings exist.
+  // Remove this block (and generateDemoStats, isDemo, yellow banner) once we have enough real users.
   const demoStats = useMemo(() => generateDemoStats(), []);
   const isDemo = !realData?.totalRatingsReceived || realData.totalRatingsReceived === 0;
-  const data = isDemo ? demoStats : realData;
+  const data = isDemo ? demoStats : {
+    ...realData,
+    stats: realData.stats as unknown as RatingStats,
+  };
 
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <Flame className="h-8 w-8 animate-pulse text-orange-500" />
+        <Flame className="h-8 w-8 animate-pulse text-brand" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <BarChart3 className="h-6 w-6 text-blue-500" />
+        <h1 className="text-2xl font-bold flex items-center gap-2.5 font-heading">
+          <div className="relative">
+            <BarChart3 className="h-6 w-6 text-blue-500" />
+            <div className="absolute inset-0 blur-md bg-blue-500/30 -z-10" />
+          </div>
           Your Mog Analytics
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mt-1">
           Detailed halo effect breakdown — see who rates your bone structure highest
         </p>
       </div>
 
       {isDemo && (
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-sm text-yellow-700 dark:text-yellow-400">
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-sm text-yellow-600 dark:text-yellow-400">
           Demo data shown — real analytics will appear once you receive ratings.
         </div>
       )}
 
       {/* Overall scores */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="text-center p-4">
-          <div className="text-3xl font-bold text-orange-500">
+      <div className="grid grid-cols-3 gap-3">
+        <Card className="text-center p-5 border-border/50 card-hover">
+          <div className="text-3xl font-bold text-brand tabular-nums">
             {data?.avgFaceRating?.toFixed(1) || "—"}
           </div>
-          <div className="text-sm text-muted-foreground">Face PSL</div>
+          <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider font-medium">Face PSL</div>
         </Card>
-        <Card className="text-center p-4">
-          <div className="text-3xl font-bold text-orange-500">
+        <Card className="text-center p-5 border-border/50 card-hover">
+          <div className="text-3xl font-bold text-brand tabular-nums">
             {data?.avgOverallRating?.toFixed(1) || "—"}
           </div>
-          <div className="text-sm text-muted-foreground">Overall Mog</div>
+          <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider font-medium">Overall Mog</div>
         </Card>
-        <Card className="text-center p-4">
-          <div className="text-3xl font-bold">
+        <Card className="text-center p-5 border-border/50 card-hover">
+          <div className="text-3xl font-bold tabular-nums">
             {data?.totalRatingsReceived || 0}
           </div>
-          <div className="text-sm text-muted-foreground">Total Ratings</div>
+          <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider font-medium">Total Ratings</div>
         </Card>
       </div>
 
