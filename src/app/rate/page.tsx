@@ -45,16 +45,14 @@ export default function RatePage() {
       router.push("/login");
       return;
     }
-    if (!loading && user && profile && !profile.profileComplete) {
-      router.push("/profile");
-      return;
-    }
-    if (user && profile?.profileComplete) {
+    // Allow rating even without a complete profile (for demo).
+    // Once profile is loaded (or confirmed null), fetch next user.
+    if (!loading && user) {
       fetchNextUser();
     }
-  }, [user, profile, loading, router, fetchNextUser]);
+  }, [user, loading, router, fetchNextUser]);
 
-  if (loading || (!profile && user)) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
         <Flame className="h-8 w-8 animate-pulse text-brand" />

@@ -170,7 +170,12 @@ export async function getLeaderboard(genderFilter?: string) {
   return users.slice(0, 100);
 }
 
-export async function getUserStats(uid: string) {
+export async function getUserStats(uid: string): Promise<{
+  stats: { byGender: Record<string, unknown>; byHairColor: Record<string, unknown>; byRace: Record<string, unknown>; byAgeRange: Record<string, unknown> };
+  avgFaceRating: number;
+  avgOverallRating: number;
+  totalRatingsReceived: number;
+}> {
   const [statsDoc, userDoc] = await Promise.all([
     getDoc(doc(db, "users", uid, "ratingStats", "aggregates")),
     getDoc(doc(db, "users", uid)),
@@ -178,13 +183,35 @@ export async function getUserStats(uid: string) {
 
   const userData = userDoc.data();
   return {
-    stats: statsDoc.exists()
+    stats: (statsDoc.exists()
       ? statsDoc.data()
-      : { byGender: {}, byHairColor: {}, byRace: {}, byAgeRange: {} },
+      : { byGender: {}, byHairColor: {}, byRace: {}, byAgeRange: {} }) as {
+        byGender: Record<string, unknown>;
+        byHairColor: Record<string, unknown>;
+        byRace: Record<string, unknown>;
+        byAgeRange: Record<string, unknown>;
+      },
     avgFaceRating: userData?.avgFaceRating || 0,
     avgOverallRating: userData?.avgOverallRating || 0,
     totalRatingsReceived: userData?.totalRatingsReceived || 0,
   };
+}
+
+export async function getUserRatingsRaw(uid: string) {
+  const snap = await getDocs(
+    query(collection(db, "ratings"), where("ratedUserId", "==", uid))
+  );
+  return snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      faceScore: data.faceScore as number,
+      overallScore: data.overallScore as number,
+      raterGender: data.raterGender as string,
+      raterAge: data.raterAge as number,
+      raterHairColor: data.raterHairColor as string,
+      raterRace: data.raterRace as string,
+    };
+  });
 }
 
 export async function getRatingHistory(uid: string) {

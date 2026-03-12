@@ -1,3 +1,5 @@
+// [SYNTHETIC DATA] This entire page is for seeding fake demo data.
+// Remove this file (and src/lib/seed-client.ts) once we have enough real users.
 "use client";
 
 import { useState } from "react";

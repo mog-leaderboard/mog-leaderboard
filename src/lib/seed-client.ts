@@ -1,6 +1,11 @@
 /**
  * Client-side seed — creates synthetic profiles and ratings using
  * the Firebase client SDK (no admin SDK / service account needed).
+ *
+ * [SYNTHETIC DATA] — This entire file is for seeding fake/demo data.
+ * Remove this file (and /seed page, demo stats in /stats) once we have
+ * enough real users. All synthetic users have uid prefix "synthetic_"
+ * and a `synthetic: true` flag. All synthetic ratings have `synthetic: true`.
  */
 import {
   collection,
@@ -42,10 +47,13 @@ function getAgeRange(age: number): string {
   if (age <= 50) return "41-50";
   return "51+";
 }
-function placeholderPhotos(seed: number): string[] {
+function humanPhotos(index: number, gender: "male" | "female"): string[] {
+  const folder = gender === "male" ? "men" : "women";
+  const id1 = index % 100;
+  const id2 = (index + 50) % 100;
   return [
-    `https://picsum.photos/seed/${seed}a/400/500`,
-    `https://picsum.photos/seed/${seed}b/400/500`,
+    `https://randomuser.me/api/portraits/${folder}/${id1}.jpg`,
+    `https://randomuser.me/api/portraits/${folder}/${id2}.jpg`,
   ];
 }
 
@@ -82,6 +90,7 @@ interface SyntheticProfile {
   totalRatingsReceived: number;
   points: number;
   profileComplete: boolean;
+  synthetic: true; // [SYNTHETIC DATA] flag for cleanup
   createdAt: string;
   updatedAt: string;
 }
@@ -95,6 +104,7 @@ interface SyntheticRating {
   raterAge: number;
   raterHairColor: HairColor;
   raterRace: Race;
+  synthetic: true; // [SYNTHETIC DATA] flag for cleanup
   createdAt: string;
 }
 
@@ -145,6 +155,8 @@ export async function seedDatabase(
   // Generate profiles
   const profiles: SyntheticProfile[] = [];
   const usedNames = new Set<string>();
+  let maleIdx = 0;
+  let femaleIdx = 0;
   for (let i = 0; i < NUM_PROFILES; i++) {
     const gender = pick(GENDERS);
     let name: string;
@@ -155,6 +167,7 @@ export async function seedDatabase(
     } while (usedNames.has(name));
     usedNames.add(name);
 
+    const photoIdx = gender === "male" ? maleIdx++ : femaleIdx++;
     profiles.push({
       uid: `synthetic_${i.toString().padStart(3, "0")}`,
       displayName: name,
@@ -162,12 +175,13 @@ export async function seedDatabase(
       age: randInt(18, 55),
       hairColor: pick(HAIR_COLORS),
       race: pick(RACES),
-      photos: placeholderPhotos(i),
+      photos: humanPhotos(photoIdx, gender),
       avgFaceRating: 0,
       avgOverallRating: 0,
       totalRatingsReceived: 0,
       points: 0,
       profileComplete: true,
+      synthetic: true, // [SYNTHETIC DATA]
       createdAt: pastISO(randInt(10, 90)),
       updatedAt: pastISO(randInt(1, 9)),
     });
@@ -202,6 +216,7 @@ export async function seedDatabase(
         raterAge: rater.age,
         raterHairColor: rater.hairColor,
         raterRace: rater.race,
+        synthetic: true, // [SYNTHETIC DATA]
         createdAt: pastISO(randInt(1, 30)),
       });
     }
@@ -257,6 +272,7 @@ export async function seedDatabase(
         raterAge: rater.age,
         raterHairColor: rater.hairColor,
         raterRace: rater.race,
+        synthetic: true, // [SYNTHETIC DATA]
         createdAt: pastISO(randInt(1, 20)),
       });
     }
